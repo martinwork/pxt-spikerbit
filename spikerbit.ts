@@ -160,7 +160,7 @@ namespace spikerbit {
 
     //% group="Initialization"
     //% weight=45 
-    //% block="startMuscleRecording"
+    //% block="start muscle recording"
     export function startMuscleRecording(): void {
         signalType = Signal.EMG;
         pins.digitalWritePin(DigitalPin.P8, 1)
@@ -179,7 +179,7 @@ namespace spikerbit {
 
     //% group="Initialization"
     //% weight=44 
-    //% block="startHeartRecording"
+    //% block="start heart recording"
     export function startHeartRecording(): void {
         signalType = Signal.ECG;
         pins.digitalWritePin(DigitalPin.P8, 0)
@@ -197,7 +197,7 @@ namespace spikerbit {
 
     //% group="Initialization"
     //% weight=43 
-    //% block="startBrainRecording"
+    //% block="start brain recording"
     export function startBrainRecording(): void {
         signalType = Signal.EEG;
         calculateNotchCoefficients(ALPHA_WAVE_FREQUENCY, Q, SAMPLING_RATE);
@@ -232,7 +232,7 @@ namespace spikerbit {
 
     //% group="Raw data"
     //% weight=41 
-    //% block="signalBlock"
+    //% block="signal block"
     export function signalBlock(): number[] {
         return buffer;
     }
@@ -243,7 +243,7 @@ namespace spikerbit {
 
     //% group="Processed data"
     //% weight=40
-    //% block="musclePower"
+    //% block="muscle power"
     export function musclePower(): number {
         return envelopeValue;
     }
@@ -254,7 +254,7 @@ namespace spikerbit {
 
     //% group="Processed data"
     //% weight=39
-    //% block="heartRate"
+    //% block="heart rate"
     export function heartRate(): number {
         return bpmECG;
     }
@@ -265,7 +265,7 @@ namespace spikerbit {
 
     //% group="Processed data"
     //% weight=38
-    //% block="brainAlphaPower"
+    //% block="brain alpha power"
     export function brainAlphaPower(): number {
         return eegAlphaPower;
     }
