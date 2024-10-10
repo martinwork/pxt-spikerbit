@@ -1,6 +1,4 @@
 
-> Open this page at [https://backyardbrains.github.io/pxt-spikerbit/](https://backyardbrains.github.io/pxt-spikerbit/)
-
 ## Use as Extension
 
 This repository can be added as an **extension** in MakeCode.
