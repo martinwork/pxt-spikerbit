@@ -1,5 +1,5 @@
 
-> Open this page at [https://stanislavmircic.github.io/pxt-spikerbit/](https://stanislavmircic.github.io/pxt-spikerbit/)
+> Open this page at [https://backyardbrains.github.io/pxt-spikerbit/](https://backyardbrains.github.io/pxt-spikerbit/)
 
 ## Use as Extension
 
@@ -8,7 +8,7 @@ This repository can be added as an **extension** in MakeCode.
 * open [https://makecode.microbit.org/](https://makecode.microbit.org/)
 * click on **New Project**
 * click on **Extensions** under the gearwheel menu
-* search for **https://github.com/stanislavmircic/pxt-spikerbit** and import
+* search for **https://github.com/BackyardBrains/pxt-spikerbit** and import
 
 ## Edit this project
 
@@ -16,7 +16,7 @@ To edit this repository in MakeCode.
 
 * open [https://makecode.microbit.org/](https://makecode.microbit.org/)
 * click on **Import** then click on **Import URL**
-* paste **https://github.com/stanislavmircic/pxt-spikerbit** and click import
+* paste **https://github.com/BackyardBrains/pxt-spikerbit** and click import
 
 #### Metadata (used for search, rendering)
 
