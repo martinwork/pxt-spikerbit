@@ -6,8 +6,7 @@ enum Signal {
 }
 
 
-
-//% color="#E69138" icon="\uf188" weight=90
+//% color="#FF805E" icon="\uf188" weight=90
 namespace spikerbit {
     let buffer: number[] = [];
     let ecgTimestamps: number[] = [];
