@@ -99,33 +99,31 @@ Here is the API description and examples formatted for a GitHub README file:
 ### Example: Recording Muscle Activity
 
 ```typescript
+spikerbit.startHeartRecording()
 basic.forever(function () {
-    spikerbit.startMuscleRecording();
-    basic.pause(2000); // Wait for 2 seconds
-    let muscleActivity = spikerbit.musclePower();
-    basic.showNumber(muscleActivity);
-});
+    serial.writeNumber(spikerbit.musclePower())
+    serial.writeLine("")
+})
 ```
 
 ### Example: Recording Heart Rate
 
 ```typescript
+spikerbit.startHeartRecording()
 basic.forever(function () {
-    spikerbit.startHeartRecording();
-    basic.pause(5000); // Wait for 5 seconds
-    let heartRate = spikerbit.heartRate();
-    basic.showNumber(heartRate);
-});
+    serial.writeNumber(spikerbit.heartRate())
+    serial.writeLine("")
+})
 ```
 
 ### Example: Recording Brain Activity (Alpha Waves)
 
 ```typescript
+spikerbit.startHeartRecording()
 basic.forever(function () {
-    spikerbit.startBrainRecording();
-    basic.pause(3000); // Wait for 3 seconds
-    let alphaPower = spikerbit.brainAlphaPower();
-    basic.showNumber(alphaPower);
+    serial.writeNumber(spikerbit.brainAlphaPower())
+    serial.writeLine("")
+})
 });
 ```
 
