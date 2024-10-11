@@ -23,6 +23,112 @@ To edit this repository in MakeCode.
 * click on **Import** then click on **Import URL**
 * paste **https://github.com/BackyardBrains/pxt-spikerbit** and click import
 
+
+Here is the API description and examples formatted for a GitHub README file:
+
+---
+
+## API Functions
+
+1. **`startMuscleRecording()`**
+
+   Starts recording the electrical activity of muscles (EMG).
+
+   ```typescript
+   spikerbit.startMuscleRecording();
+   ```
+
+2. **`startHeartRecording()`**
+
+   Begins recording heart electrical activity (ECG) and calculates heart rate.
+
+   ```typescript
+   spikerbit.startHeartRecording();
+   ```
+
+3. **`startBrainRecording()`**
+
+   Starts recording brain electrical activity (EEG) and measures alpha wave power.
+
+   ```typescript
+   spikerbit.startBrainRecording();
+   ```
+
+4. **`signal()`**
+
+   Returns the last recorded sample from the ongoing bio-signal recording.
+
+   ```typescript
+   let lastSignal = spikerbit.signal();
+   ```
+
+5. **`signalBlock()`**
+
+   Returns an array containing the last two seconds of recorded signal data.
+
+   ```typescript
+   let signalData = spikerbit.signalBlock();
+   ```
+
+6. **`musclePower()`**
+
+   Returns the current envelope value, representing muscle power from the EMG signal.
+
+   ```typescript
+   let power = spikerbit.musclePower();
+   ```
+
+7. **`heartRate()`**
+
+   Returns the calculated heart rate (in BPM) based on the ECG signal.
+
+   ```typescript
+   let heartRate = spikerbit.heartRate();
+   ```
+
+8. **`brainAlphaPower()`**
+
+   Returns the calculated alpha wave power from the EEG signal.
+
+   ```typescript
+   let alphaPower = spikerbit.brainAlphaPower();
+   ```
+
+## Examples
+
+### Example: Recording Muscle Activity
+
+```typescript
+basic.forever(function () {
+    spikerbit.startMuscleRecording();
+    basic.pause(2000); // Wait for 2 seconds
+    let muscleActivity = spikerbit.musclePower();
+    basic.showNumber(muscleActivity);
+});
+```
+
+### Example: Recording Heart Rate
+
+```typescript
+basic.forever(function () {
+    spikerbit.startHeartRecording();
+    basic.pause(5000); // Wait for 5 seconds
+    let heartRate = spikerbit.heartRate();
+    basic.showNumber(heartRate);
+});
+```
+
+### Example: Recording Brain Activity (Alpha Waves)
+
+```typescript
+basic.forever(function () {
+    spikerbit.startBrainRecording();
+    basic.pause(3000); // Wait for 3 seconds
+    let alphaPower = spikerbit.brainAlphaPower();
+    basic.showNumber(alphaPower);
+});
+```
+
 #### Metadata (used for search, rendering)
 
 * for PXT/microbit
