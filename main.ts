@@ -1,8 +1,5 @@
-spikerbit.startMuscleRecording()
+spikerbit.startHeartRecording()
 basic.forever(function () {
-    if (spikerbit.musclePower() > 10) {
-        basic.showIcon(IconNames.SmallHeart)
-    } else {
-        basic.showIcon(IconNames.Square)
-    }
+    serial.writeNumber(spikerbit.heartRate())
+    serial.writeLine("")
 })
