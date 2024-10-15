@@ -1,4 +1,5 @@
 spikerbit.startHeartRecording()
 basic.forever(function () {
-    serial.writeNumber(4)
+    serial.writeNumber(spikerbit.heartRate())
+    serial.writeLine("")
 })

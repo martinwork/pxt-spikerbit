@@ -19,10 +19,11 @@ namespace spikerbit {
     const MAX_BUFFER_SIZE = 500;
     const NOISE_FLOOR = 580;
     const ENVELOPE_DECAY = 2;
-    const ECG_JUMP = 60
+    const ECG_TOP_THRESHOLD = 100
+    const ECG_BOTTOM_THRESHOLD = -100
     const DEBOUNCE_PERIOD_ECG = 300
     const ECG_LPF_CUTOFF = 40
-
+    const ECG_HPF_CUTOFF = 3
 
     // Filter notchCoefficients: [b0, b1, b2, a1, a2]
     let notchCoefficients: number[] = [0, 0, 0, 0, 0];
@@ -210,14 +211,15 @@ namespace spikerbit {
             pins.digitalWritePin(DigitalPin.P2, 1)
             lastSample = tempCalculationValue
             tempCalculationValue = pins.analogReadPin(AnalogPin.P1)
-
+            buffer.push(tempCalculationValue);
 
             if (buffer.length > MAX_BUFFER_SIZE) {
                 buffer.removeAt(0)
             }
             if (signalType == Signal.ECG) {
                 tempCalculationValue = lpfFilterSingleSample(tempCalculationValue)
-                if ((tempCalculationValue - lastSample) > ECG_JUMP) {
+                tempCalculationValue = hpfFilterSingleSample(tempCalculationValue)
+                if (tempCalculationValue > ECG_TOP_THRESHOLD || tempCalculationValue < ECG_BOTTOM_THRESHOLD) {
                     let currentMillis = control.millis()
                     if (ecgTimestamps.length > 0) {
                         if ((currentMillis - ecgTimestamps[ecgTimestamps.length - 1]) > DEBOUNCE_PERIOD_ECG) {
@@ -259,7 +261,8 @@ namespace spikerbit {
                     eegAlphaPower = 0;
                 }
             }
-            buffer.push(tempCalculationValue);
+            
+
             pins.digitalWritePin(DigitalPin.P2, 0)
             basic.pause(0)
         }
@@ -296,6 +299,7 @@ namespace spikerbit {
     export function startHeartRecording(): void {
         signalType = Signal.ECG;
         calculateLPFCoefficients(ECG_LPF_CUTOFF, Q_LPF_HPF, SAMPLING_RATE)
+        calculateHPFCoefficients(ECG_HPF_CUTOFF, Q_LPF_HPF, SAMPLING_RATE);
         pins.digitalWritePin(DigitalPin.P8, 0)
         pins.digitalWritePin(DigitalPin.P9, 1)
         if (notInitialized) {
