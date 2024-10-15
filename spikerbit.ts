@@ -12,7 +12,7 @@ namespace spikerbit {
     let ecgTimestamps: number[] = [];
     let signalType: Signal = Signal.EMG
     let notInitialized = 1
-    let envelopeValue: number = 0
+    let envelopeValue: number = 0 
     let tempCalculationValue: number = 0
     let lastSample = 0
     let bpmECG: number = 0
