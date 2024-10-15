@@ -15,25 +15,39 @@ namespace spikerbit {
     let envelopeValue: number = 0 
     let tempCalculationValue: number = 0
     let lastSample = 0
-    let bpmECG: number = 0
+    let bpmHeart: number = 0
     const MAX_BUFFER_SIZE = 500;
     const NOISE_FLOOR = 580;
     const ENVELOPE_DECAY = 2;
-    const ECG_JUMP = 40
+    const ECG_JUMP = 60
     const DEBOUNCE_PERIOD_ECG = 300
+    const ECG_LPF_CUTOFF = 40
 
 
-    // Filter coefficients: [b0, b1, b2, a1, a2]
-    let coefficients: number[] = [0, 0, 0, 0, 0];
+    // Filter notchCoefficients: [b0, b1, b2, a1, a2]
+    let notchCoefficients: number[] = [0, 0, 0, 0, 0];
+    // Buffers to keep the last two input and output samples for Notch
+    let notchInputKeepBuffer: number[] = [0, 0];
+    let notchOutputKeepBuffer: number[] = [0, 0];
 
-    // Buffers to keep the last two input and output samples
-    let gInputKeepBuffer: number[] = [0, 0];
-    let gOutputKeepBuffer: number[] = [0, 0];
+    // Lpf Coefficients: [b0, b1, b2, a1, a2]
+    let lpfCoefficients: number[] = [0, 0, 0, 0, 0];
+    // Buffers to keep the last two input and output samples for lpf
+    let lpfInputKeepBuffer: number[] = [0, 0];
+    let lpfOutputKeepBuffer: number[] = [0, 0];
+
+    // Hpf Coefficients: [b0, b1, b2, a1, a2]
+    let hpfCoefficients: number[] = [0, 0, 0, 0, 0];
+    // Buffers to keep the last two input and output samples for lpf
+    let hpfInputKeepBuffer: number[] = [0, 0];
+    let hpfOutputKeepBuffer: number[] = [0, 0];
+
 
     // Filter parameters
     const SAMPLING_RATE: number = 250;       // Hz
     const ALPHA_WAVE_FREQUENCY: number = 10;     // Hz (Notch frequency)
-    const Q: number = 1;                   // Quality factor
+    const Q_NOTCH: number = 1;                   // Quality factor
+    const Q_LPF_HPF: number = 0.5;                   // Quality factor
     const BASELINE_ALPHA: number = 20;
 
     let eegSignalPower: number = 0;
@@ -42,7 +56,7 @@ namespace spikerbit {
     let eegAlphaPower: number = 0;
 
     /**
-     * Calculate intermediate variables and set filter coefficients
+     * Calculate intermediate variables and set filter notchCoefficients
      */
     function calculateNotchCoefficients(Fc: number, Q: number, Fs: number): void {
         const omega = (2 * Math.PI * Fc) / Fs;
@@ -57,37 +71,135 @@ namespace spikerbit {
         const a1 = (-2 * omegaC) / a0;
         const a2 = (1 - alpha) / a0;
 
+        // Set the Coefficients array
+        notchCoefficients[0] = b0;
+        notchCoefficients[1] = b1;
+        notchCoefficients[2] = b2;
+        notchCoefficients[3] = a1;
+        notchCoefficients[4] = a2;
+    }
+
+ 
+    function calculateLPFCoefficients(Fc: number, Q: number, Fs: number): void {
+        const omega = (2 * Math.PI * Fc) / Fs;
+        const omegaS = Math.sin(omega);
+        const omegaC = Math.cos(omega);
+        const alpha = omegaS / (2 * Q);
+
+        const a0 = 1 + alpha;
+        const b0 = ((1 - omegaC) / 2) / a0;
+        const b1 = ((1 - omegaC)) / a0;
+        const b2 = ((1 - omegaC) / 2) / a0;
+        const a1 = (-2 * omegaC) / a0;
+        const a2 = (1 - alpha) / a0;
+
+
+
         // Set the coefficients array
-        coefficients[0] = b0;
-        coefficients[1] = b1;
-        coefficients[2] = b2;
-        coefficients[3] = a1;
-        coefficients[4] = a2;
+        lpfCoefficients[0] = b0;
+        lpfCoefficients[1] = b1;
+        lpfCoefficients[2] = b2;
+        lpfCoefficients[3] = a1;
+        lpfCoefficients[4] = a2;
     }
 
 
+    function calculateHPFCoefficients(Fc: number, Q: number, Fs: number): void {
+        const omega = (2 * Math.PI * Fc) / Fs;
+        const omegaS = Math.sin(omega);
+        const omegaC = Math.cos(omega);
+        const alpha = omegaS / (2 * Q);
+
+        const a0 = 1 + alpha;
+        const b0 = ((1 + omegaC) / 2) / a0;
+        const b1 = (-1 * (1 + omegaC)) / a0;
+        const b2 = ((1 + omegaC) / 2) / a0;
+        const a1 = (-2 * omegaC) / a0;
+        const a2 = (1 - alpha) / a0;
+
+
+        // Set the coefficients array
+        hpfCoefficients[0] = b0;
+        hpfCoefficients[1] = b1;
+        hpfCoefficients[2] = b2;
+        hpfCoefficients[3] = a1;
+        hpfCoefficients[4] = a2;
+    }
+
 
     /**
-  * Filter a single input sample and return the filtered output
-  * @param inputValue The input sample to be filtered
-  * @returns The filtered output sample
-  */
-    export function filterSingleSample(inputValue: number): number {
+    * Notch filter a single input sample and return the filtered output
+    * @param inputValue The input sample to be filtered
+    * @returns The filtered output sample
+    */
+    export function notchFilterSingleSample(inputValue: number): number {
         // Compute the filtered output using the difference equation:
         // y[n] = b0*x[n] + b1*x[n-1] + b2*x[n-2] - a1*y[n-1] - a2*y[n-2]
-        const y = (coefficients[0] * inputValue) +
-            (coefficients[1] * gInputKeepBuffer[0]) +
-            (coefficients[2] * gInputKeepBuffer[1]) -
-            (coefficients[3] * gOutputKeepBuffer[0]) -
-            (coefficients[4] * gOutputKeepBuffer[1]);
+        const y = (notchCoefficients[0] * inputValue) +
+            (notchCoefficients[1] * notchInputKeepBuffer[0]) +
+            (notchCoefficients[2] * notchInputKeepBuffer[1]) -
+            (notchCoefficients[3] * notchOutputKeepBuffer[0]) -
+            (notchCoefficients[4] * notchOutputKeepBuffer[1]);
 
         // Update the input buffer (shift the samples)
-        gInputKeepBuffer[1] = gInputKeepBuffer[0]; // x[n-2] = x[n-1]
-        gInputKeepBuffer[0] = inputValue;           // x[n-1] = x[n]
+        notchInputKeepBuffer[1] = notchInputKeepBuffer[0]; 
+        notchInputKeepBuffer[0] = inputValue;           
 
         // Update the output buffer (shift the samples)
-        gOutputKeepBuffer[1] = gOutputKeepBuffer[0]; // y[n-2] = y[n-1]
-        gOutputKeepBuffer[0] = y;                     // y[n-1] = y[n]
+        notchOutputKeepBuffer[1] = notchOutputKeepBuffer[0]; 
+        notchOutputKeepBuffer[0] = y;                     
+
+        return y | 0;
+    }
+
+
+    /**
+    * Low pass Filter a single input sample and return the filtered output
+    * @param inputValue The input sample to be filtered
+    * @returns The filtered output sample
+    */
+    export function lpfFilterSingleSample(inputValue: number): number {
+        // Compute the filtered output using the difference equation:
+        // y[n] = b0*x[n] + b1*x[n-1] + b2*x[n-2] - a1*y[n-1] - a2*y[n-2]
+        const y = (lpfCoefficients[0] * inputValue) +
+            (lpfCoefficients[1] * lpfInputKeepBuffer[0]) +
+            (lpfCoefficients[2] * lpfInputKeepBuffer[1]) -
+            (lpfCoefficients[3] * lpfOutputKeepBuffer[0]) -
+            (lpfCoefficients[4] * lpfOutputKeepBuffer[1]);
+
+        // Update the input buffer (shift the samples)
+        lpfInputKeepBuffer[1] = lpfInputKeepBuffer[0]; 
+        lpfInputKeepBuffer[0] = inputValue;           
+
+        // Update the output buffer (shift the samples)
+        lpfOutputKeepBuffer[1] = lpfOutputKeepBuffer[0]; 
+        lpfOutputKeepBuffer[0] = y;                     
+
+        return y | 0;
+    }
+
+
+    /**
+    * High pass Filter a single input sample and return the filtered output
+    * @param inputValue The input sample to be filtered
+    * @returns The filtered output sample
+    */
+    export function hpfFilterSingleSample(inputValue: number): number {
+        // Compute the filtered output using the difference equation:
+        // y[n] = b0*x[n] + b1*x[n-1] + b2*x[n-2] - a1*y[n-1] - a2*y[n-2]
+        const y = (hpfCoefficients[0] * inputValue) +
+            (hpfCoefficients[1] * hpfInputKeepBuffer[0]) +
+            (hpfCoefficients[2] * hpfInputKeepBuffer[1]) -
+            (hpfCoefficients[3] * hpfOutputKeepBuffer[0]) -
+            (hpfCoefficients[4] * hpfOutputKeepBuffer[1]);
+
+        // Update the input buffer (shift the samples)
+        hpfInputKeepBuffer[1] = hpfInputKeepBuffer[0];
+        hpfInputKeepBuffer[0] = inputValue;
+
+        // Update the output buffer (shift the samples)
+        hpfOutputKeepBuffer[1] = hpfOutputKeepBuffer[0];
+        hpfOutputKeepBuffer[0] = y;
 
         return y | 0;
     }
@@ -98,12 +210,13 @@ namespace spikerbit {
             pins.digitalWritePin(DigitalPin.P2, 1)
             lastSample = tempCalculationValue
             tempCalculationValue = pins.analogReadPin(AnalogPin.P1)
-            buffer.push(tempCalculationValue);
+
 
             if (buffer.length > MAX_BUFFER_SIZE) {
                 buffer.removeAt(0)
             }
             if (signalType == Signal.ECG) {
+                tempCalculationValue = lpfFilterSingleSample(tempCalculationValue)
                 if ((tempCalculationValue - lastSample) > ECG_JUMP) {
                     let currentMillis = control.millis()
                     if (ecgTimestamps.length > 0) {
@@ -117,7 +230,8 @@ namespace spikerbit {
 
                     if (ecgTimestamps.length > 3) {
                         ecgTimestamps.removeAt(0)
-                        bpmECG = (120000 / (ecgTimestamps[2] - ecgTimestamps[1] + ecgTimestamps[1] - ecgTimestamps[0])) | 0
+                        bpmHeart = (120000 / (ecgTimestamps[2] - ecgTimestamps[1] + ecgTimestamps[1] - ecgTimestamps[0])) | 0
+                        
                     }
 
                 }
@@ -138,14 +252,14 @@ namespace spikerbit {
             }
             else if (signalType = Signal.EEG) {
                 eegSignalPower = eegSignalPower * 0.99 + 0.01 * (Math.abs(tempCalculationValue - 512))
-                filteredValue = filterSingleSample(tempCalculationValue)
+                filteredValue = notchFilterSingleSample(tempCalculationValue)
                 eegNotchedSignalPower = eegNotchedSignalPower * 0.99 + 0.01 * (Math.abs(filteredValue - 512))
                 eegAlphaPower = (eegSignalPower - eegNotchedSignalPower) - BASELINE_ALPHA;
                 if (eegAlphaPower < 0) {
                     eegAlphaPower = 0;
                 }
             }
-
+            buffer.push(tempCalculationValue);
             pins.digitalWritePin(DigitalPin.P2, 0)
             basic.pause(0)
         }
@@ -181,6 +295,7 @@ namespace spikerbit {
     //% block="start heart recording"
     export function startHeartRecording(): void {
         signalType = Signal.ECG;
+        calculateLPFCoefficients(ECG_LPF_CUTOFF, Q_LPF_HPF, SAMPLING_RATE)
         pins.digitalWritePin(DigitalPin.P8, 0)
         pins.digitalWritePin(DigitalPin.P9, 1)
         if (notInitialized) {
@@ -199,7 +314,7 @@ namespace spikerbit {
     //% block="start brain recording"
     export function startBrainRecording(): void {
         signalType = Signal.EEG;
-        calculateNotchCoefficients(ALPHA_WAVE_FREQUENCY, Q, SAMPLING_RATE);
+        calculateNotchCoefficients(ALPHA_WAVE_FREQUENCY, Q_NOTCH, SAMPLING_RATE);
         pins.digitalWritePin(DigitalPin.P8, 0)
         pins.digitalWritePin(DigitalPin.P9, 0)
         if (notInitialized) {
@@ -255,7 +370,7 @@ namespace spikerbit {
     //% weight=39
     //% block="heart rate"
     export function heartRate(): number {
-        return bpmECG;
+        return bpmHeart;
     }
 
     /**
