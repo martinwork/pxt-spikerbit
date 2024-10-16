@@ -25,6 +25,7 @@ namespace spikerbit {
     const ECG_LPF_CUTOFF = 40
     const ECG_HPF_CUTOFF = 3
 
+
     // Filter notchCoefficients: [b0, b1, b2, a1, a2]
     let notchCoefficients: number[] = [0, 0, 0, 0, 0];
     // Buffers to keep the last two input and output samples for Notch
@@ -208,7 +209,7 @@ namespace spikerbit {
     // Define your background function
     function backgroundTask(): void {
         while (true) {
-            pins.digitalWritePin(DigitalPin.P2, 1)
+
             lastSample = tempCalculationValue
             tempCalculationValue = pins.analogReadPin(AnalogPin.P1)
             buffer.push(tempCalculationValue);
@@ -262,8 +263,6 @@ namespace spikerbit {
                 }
             }
             
-
-            pins.digitalWritePin(DigitalPin.P2, 0)
             basic.pause(0)
         }
     }
@@ -319,7 +318,7 @@ namespace spikerbit {
     export function startBrainRecording(): void {
         signalType = Signal.EEG;
         calculateNotchCoefficients(ALPHA_WAVE_FREQUENCY, Q_NOTCH, SAMPLING_RATE);
-        pins.digitalWritePin(DigitalPin.P8, 0)
+        pins.digitalWritePin(DigitalPin.P8, 1)
         pins.digitalWritePin(DigitalPin.P9, 0)
         if (notInitialized) {
             control.inBackground(() => {
