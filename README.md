@@ -30,102 +30,91 @@ Here is the API description and examples formatted for a GitHub README file:
 
 ## API Functions
 
-1. **`startMuscleRecording()`**
+### Muscle Group
 
-   Starts recording the electrical activity of muscles (EMG).
-
-   ```typescript
-   spikerbit.startMuscleRecording();
-   ```
-
-2. **`startHeartRecording()`**
-
-   Begins recording heart electrical activity (ECG) and calculates heart rate.
-
-   ```typescript
-   spikerbit.startHeartRecording();
-   ```
-
-3. **`startBrainRecording()`**
-
-   Starts recording brain electrical activity (EEG) and measures alpha wave power.
-
-   ```typescript
-   spikerbit.startBrainRecording();
-   ```
-
-4. **`signal()`**
-
-   Returns the last recorded sample from the ongoing bio-signal recording.
-
-   ```typescript
-   let lastSignal = spikerbit.signal();
-   ```
-
-5. **`signalBlock()`**
-
-   Returns an array containing the last two seconds of recorded signal data.
-
-   ```typescript
-   let signalData = spikerbit.signalBlock();
-   ```
-
-6. **`musclePower()`**
-
-   Returns the current envelope value, representing muscle power from the EMG signal.
-
-   ```typescript
-   let power = spikerbit.musclePower();
-   ```
-
-7. **`heartRate()`**
-
-   Returns the calculated heart rate (in BPM) based on the ECG signal.
-
-   ```typescript
-   let heartRate = spikerbit.heartRate();
-   ```
-
-8. **`brainAlphaPower()`**
-
-   Returns the calculated alpha wave power from the EEG signal.
-
-   ```typescript
-   let alphaPower = spikerbit.brainAlphaPower();
-   ```
-
-## Examples
-
-### Example: Recording Muscle Activity
+#### `startMuscleRecording()`
+Starts recording muscle (EMG) signals.
 
 ```typescript
-spikerbit.startHeartRecording()
-basic.forever(function () {
-    serial.writeNumber(spikerbit.musclePower())
-    serial.writeLine("")
-})
+spikerbit.startMuscleRecording();
 ```
 
-### Example: Recording Heart Rate
+#### `musclePowerSignal(): number`
+Returns the last envelope value of the EMG signal.
 
 ```typescript
-spikerbit.startHeartRecording()
-basic.forever(function () {
-    serial.writeNumber(spikerbit.heartRate())
-    serial.writeLine("")
-})
+let power = spikerbit.musclePowerSignal();
 ```
 
-### Example: Recording Brain Activity (Alpha Waves)
+#### `muscleRawsignal(): number`
+Returns the raw EMG signal.
 
 ```typescript
-spikerbit.startHeartRecording()
-basic.forever(function () {
-    serial.writeNumber(spikerbit.brainAlphaPower())
-    serial.writeLine("")
-})
-});
+let rawSignal = spikerbit.muscleRawsignal();
 ```
+
+### Heart Group
+
+#### `startHeartRecording()`
+Starts recording heart (ECG) signals.
+
+```typescript
+spikerbit.startHeartRecording();
+```
+
+#### `heartSignal(): number`
+Returns the last measured ECG signal.
+
+```typescript
+let signal = spikerbit.heartSignal();
+```
+
+#### `heartRate(): number`
+Returns the calculated heart rate.
+
+```typescript
+let rate = spikerbit.heartRate();
+```
+
+### Brain Group
+
+#### `startBrainRecording()`
+Starts recording brain (EEG) signals.
+
+```typescript
+spikerbit.startBrainRecording();
+```
+
+#### `brainSignal(): number`
+Returns the last measured EEG signal.
+
+```typescript
+let signal = spikerbit.brainSignal();
+```
+
+#### `brainAlphaPower(): number`
+Returns the alpha wave power of the EEG signal.
+
+```typescript
+let alphaPower = spikerbit.brainAlphaPower();
+```
+
+### Helper Utility
+
+#### `print(value: number): void`
+Prints the signal value to the serial output.
+
+```typescript
+spikerbit.print(spikerbit.heartRate());
+```
+
+#### `signalBlock(): number[]`
+Returns the recorded signal block for the last 2 seconds.
+
+```typescript
+let signalBlock = spikerbit.signalBlock();
+```
+
 
 #### Metadata (used for search, rendering)
 
