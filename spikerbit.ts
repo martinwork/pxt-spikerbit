@@ -16,7 +16,7 @@ namespace spikerbit {
     let tempCalculationValue: number = 0
     let lastSample = 0
     let bpmHeart: number = 0
-    const MAX_BUFFER_SIZE = 500;
+    const MAX_BUFFER_SIZE = 750;
     const NOISE_FLOOR = 580;
     const ENVELOPE_DECAY = 2;
     const ECG_TOP_THRESHOLD = 100
@@ -273,7 +273,7 @@ namespace spikerbit {
      * Start recording EMG signal 
      */
 
-    //% group="Initialization"
+    //% group="Muscle"
     //% weight=45 
     //% block="start muscle recording"
     export function startMuscleRecording(): void {
@@ -292,7 +292,7 @@ namespace spikerbit {
      * Start recording ECG signal
      */
 
-    //% group="Initialization"
+    //% group="Heart"
     //% weight=44 
     //% block="start heart recording"
     export function startHeartRecording(): void {
@@ -312,7 +312,7 @@ namespace spikerbit {
  * Start recording EEG signal
  */
 
-    //% group="Initialization"
+    //% group="Brain"
     //% weight=43 
     //% block="start brain recording"
     export function startBrainRecording(): void {
@@ -331,10 +331,10 @@ namespace spikerbit {
      * Return last measured value of the signal
      */
 
-    //% group="Raw data"
+    //% group="Heart"
     //% weight=42
-    //% block="signal"
-    export function signal(): number {
+    //% block="heart signal"
+    export function heartSignal(): number {
         if (buffer.length > 0) {
             return buffer[buffer.length - 1];
         }
@@ -344,24 +344,59 @@ namespace spikerbit {
     }
 
     /**
+     * Return last measured value of the signal
+     */
+
+    //% group="Brain"
+    //% weight=42
+    //% block="brain signal"
+    export function brainSignal(): number {
+        if (buffer.length > 0) {
+            return buffer[buffer.length - 1];
+        }
+        else {
+            return 0;
+        }
+    }
+
+    /**
+     * Return last measured value of the signal
+     */
+
+    //% group="Helper Utility"
+    //% weight=42
+    //% block="muscle raw signal"
+    export function muscleRawsignal(): number {
+        if (buffer.length > 0) {
+            return buffer[buffer.length - 1];
+        }
+        else {
+            return 0;
+        }
+    }
+
+
+    /**
      * Return two seconds of recorded signal
      */
 
-    //% group="Raw data"
+    //% group="Helper Utility"
     //% weight=41 
     //% block="signal block"
     export function signalBlock(): number[] {
         return buffer;
     }
 
-    /**
-         * Return last envelope value
-         */
 
-    //% group="Processed data"
+
+    /**
+     * Return last envelope value
+     */
+
+    //% group="Muscle"
     //% weight=40
-    //% block="muscle power"
-    export function musclePower(): number {
+    //% block="muscle power signal"
+    export function musclePowerSignal(): number {
         return envelopeValue;
     }
 
@@ -369,7 +404,7 @@ namespace spikerbit {
          * Return heart rate
          */
 
-    //% group="Processed data"
+    //% group="Heart"
     //% weight=39
     //% block="heart rate"
     export function heartRate(): number {
@@ -380,7 +415,7 @@ namespace spikerbit {
          * Return alpha waves power
          */
 
-    //% group="Processed data"
+    //% group="Brain"
     //% weight=38
     //% block="brain alpha power"
     export function brainAlphaPower(): number {
