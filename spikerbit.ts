@@ -295,7 +295,14 @@ namespace spikerbit {
     //% weight=40
     //% block="muscle power signal"
     export function musclePowerSignal(): number {
-        return envelopeValue;
+        if (signalType == Signal.EMG)
+        {
+            return envelopeValue;
+        }
+        else
+        {
+            return 0;
+        }
     }
 
     /**
@@ -328,7 +335,7 @@ namespace spikerbit {
     //% weight=51
     //% block="heart signal"
     export function heartSignal(): number {
-        if (buffer.length > 0) {
+        if (buffer.length > 0 && signalType == Signal.ECG) {
             return buffer[buffer.length - 1];
         }
         else {
@@ -344,7 +351,14 @@ namespace spikerbit {
     //% weight=50
     //% block="heart rate"
     export function heartRate(): number {
-        return bpmHeart;
+        if (signalType == Signal.ECG)
+        {
+            return bpmHeart;
+        }
+        else
+        {
+            return 0;
+        }
     }
 
     /**
@@ -374,7 +388,7 @@ namespace spikerbit {
     //% weight=61
     //% block="brain signal"
     export function brainSignal(): number {
-        if (buffer.length > 0) {
+        if (buffer.length > 0 && signalType == Signal.EEG) {
             return buffer[buffer.length - 1];
         }
         else {
@@ -390,7 +404,14 @@ namespace spikerbit {
     //% weight=60
     //% block="brain alpha power"
     export function brainAlphaPower(): number {
-        return eegAlphaPower;
+        if (signalType == Signal.EEG)
+        {
+            return eegAlphaPower;
+        }
+        else
+        {
+            return 0;
+        }
     }
 
     
@@ -412,7 +433,7 @@ namespace spikerbit {
     //% weight=71
     //% block="muscle raw signal"
     export function muscleRawsignal(): number {
-        if (buffer.length > 0) {
+        if (buffer.length > 0 && signalType == Signal.EMG) {
             return buffer[buffer.length - 1];
         }
         else {
