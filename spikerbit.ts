@@ -274,7 +274,7 @@ namespace spikerbit {
      */
 
     //% group="Muscle"
-    //% weight=45 
+    //% weight=41
     //% block="start muscle recording"
     export function startMuscleRecording(): void {
         signalType = Signal.EMG;
@@ -287,13 +287,23 @@ namespace spikerbit {
         }
     }
 
+    /**
+     * Return last envelope value
+     */
+
+    //% group="Muscle"
+    //% weight=40
+    //% block="muscle power signal"
+    export function musclePowerSignal(): number {
+        return envelopeValue;
+    }
 
     /**
      * Start recording ECG signal
      */
 
     //% group="Heart"
-    //% weight=44 
+    //% weight=52
     //% block="start heart recording"
     export function startHeartRecording(): void {
         signalType = Signal.ECG;
@@ -308,12 +318,41 @@ namespace spikerbit {
         }
     }
 
+
+
     /**
- * Start recording EEG signal
- */
+     * Return last measured value of the signal
+     */
+
+    //% group="Heart"
+    //% weight=51
+    //% block="heart signal"
+    export function heartSignal(): number {
+        if (buffer.length > 0) {
+            return buffer[buffer.length - 1];
+        }
+        else {
+            return 0;
+        }
+    }
+
+    /**
+     * Return heart rate
+     */
+
+    //% group="Heart"
+    //% weight=50
+    //% block="heart rate"
+    export function heartRate(): number {
+        return bpmHeart;
+    }
+
+    /**
+     * Start recording EEG signal
+     */
 
     //% group="Brain"
-    //% weight=43 
+    //% weight=62
     //% block="start brain recording"
     export function startBrainRecording(): void {
         signalType = Signal.EEG;
@@ -331,24 +370,8 @@ namespace spikerbit {
      * Return last measured value of the signal
      */
 
-    //% group="Heart"
-    //% weight=42
-    //% block="heart signal"
-    export function heartSignal(): number {
-        if (buffer.length > 0) {
-            return buffer[buffer.length - 1];
-        }
-        else {
-            return 0;
-        }
-    }
-
-    /**
-     * Return last measured value of the signal
-     */
-
     //% group="Brain"
-    //% weight=42
+    //% weight=61
     //% block="brain signal"
     export function brainSignal(): number {
         if (buffer.length > 0) {
@@ -360,11 +383,33 @@ namespace spikerbit {
     }
 
     /**
+         * Return alpha waves power
+         */
+
+    //% group="Brain"
+    //% weight=60
+    //% block="brain alpha power"
+    export function brainAlphaPower(): number {
+        return eegAlphaPower;
+    }
+
+    
+    /**
+     * Print number provided as input parameter
+     */
+
+    //% group="Helper Utility"
+    //% weight=72
+    //% block="print %value"
+    export function print(value: number): void {
+        serial.writeValue("Signal", value);
+    }
+    /**
      * Return last measured value of the signal
      */
 
     //% group="Helper Utility"
-    //% weight=42
+    //% weight=71
     //% block="muscle raw signal"
     export function muscleRawsignal(): number {
         if (buffer.length > 0) {
@@ -376,51 +421,16 @@ namespace spikerbit {
     }
 
 
+
     /**
      * Return two seconds of recorded signal
      */
 
     //% group="Helper Utility"
-    //% weight=41 
+    //% weight=70
     //% block="signal block"
     export function signalBlock(): number[] {
         return buffer;
     }
-
-
-
-    /**
-     * Return last envelope value
-     */
-
-    //% group="Muscle"
-    //% weight=40
-    //% block="muscle power signal"
-    export function musclePowerSignal(): number {
-        return envelopeValue;
-    }
-
-    /**
-         * Return heart rate
-         */
-
-    //% group="Heart"
-    //% weight=39
-    //% block="heart rate"
-    export function heartRate(): number {
-        return bpmHeart;
-    }
-
-    /**
-         * Return alpha waves power
-         */
-
-    //% group="Brain"
-    //% weight=38
-    //% block="brain alpha power"
-    export function brainAlphaPower(): number {
-        return eegAlphaPower;
-    }
-
 
 }
