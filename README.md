@@ -108,6 +108,13 @@ Prints the signal value to the serial output.
 spikerbit.print(spikerbit.heartRate());
 ```
 
+#### `muscleRawsignal(): number`
+Returns the last measured EMG signal.
+
+```typescript
+spikerbit.muscleRawsignal();
+```
+
 #### `signalBlock(): number[]`
 Returns the recorded signal block for the last 3 seconds (750 samples).
 
