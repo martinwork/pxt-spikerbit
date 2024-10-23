@@ -70,7 +70,7 @@ let signal = spikerbit.heartSignal();
 ```
 
 #### `heartRate(): number`
-Returns the calculated heart rate.
+Returns the calculated heart rate based on the last two heart beats.
 
 ```typescript
 let rate = spikerbit.heartRate();
@@ -109,7 +109,7 @@ spikerbit.print(spikerbit.heartRate());
 ```
 
 #### `signalBlock(): number[]`
-Returns the recorded signal block for the last 2 seconds.
+Returns the recorded signal block for the last 3 seconds (750 samples).
 
 ```typescript
 let signalBlock = spikerbit.signalBlock();
