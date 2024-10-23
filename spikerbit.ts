@@ -328,7 +328,7 @@ namespace spikerbit {
 
 
     /**
-     * Return last measured value of the signal
+     * Return last measured value of the ECG signal
      */
 
     //% group="Heart"
@@ -381,7 +381,7 @@ namespace spikerbit {
     }
 
     /**
-     * Return last measured value of the signal
+     * Return last measured value of the EEG signal
      */
 
     //% group="Brain"
@@ -426,7 +426,7 @@ namespace spikerbit {
         serial.writeValue("Signal", value);
     }
     /**
-     * Return last measured value of the signal
+     * Return last measured value of the EMG signal
      */
 
     //% group="Helper Utility"
@@ -444,7 +444,7 @@ namespace spikerbit {
 
 
     /**
-     * Return two seconds of recorded signal
+     * Return tree seconds of recorded signal
      */
 
     //% group="Helper Utility"
