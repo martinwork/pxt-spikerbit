@@ -12,7 +12,7 @@ namespace spikerbit {
     let ecgTimestamps: number[] = [];
     let signalType: Signal = Signal.EMG
     let notInitialized = 1
-    let envelopeValue: number = 0 
+    let envelopeValue: number = 0
     let tempCalculationValue: number = 0
     let lastSample = 0
     let bpmHeart: number = 0
@@ -81,7 +81,7 @@ namespace spikerbit {
         notchCoefficients[4] = a2;
     }
 
- 
+
     function calculateLPFCoefficients(Fc: number, Q: number, Fs: number): void {
         const omega = (2 * Math.PI * Fc) / Fs;
         const omegaS = Math.sin(omega);
@@ -144,12 +144,12 @@ namespace spikerbit {
             (notchCoefficients[4] * notchOutputKeepBuffer[1]);
 
         // Update the input buffer (shift the samples)
-        notchInputKeepBuffer[1] = notchInputKeepBuffer[0]; 
-        notchInputKeepBuffer[0] = inputValue;           
+        notchInputKeepBuffer[1] = notchInputKeepBuffer[0];
+        notchInputKeepBuffer[0] = inputValue;
 
         // Update the output buffer (shift the samples)
-        notchOutputKeepBuffer[1] = notchOutputKeepBuffer[0]; 
-        notchOutputKeepBuffer[0] = y;                     
+        notchOutputKeepBuffer[1] = notchOutputKeepBuffer[0];
+        notchOutputKeepBuffer[0] = y;
 
         return y | 0;
     }
@@ -170,12 +170,12 @@ namespace spikerbit {
             (lpfCoefficients[4] * lpfOutputKeepBuffer[1]);
 
         // Update the input buffer (shift the samples)
-        lpfInputKeepBuffer[1] = lpfInputKeepBuffer[0]; 
-        lpfInputKeepBuffer[0] = inputValue;           
+        lpfInputKeepBuffer[1] = lpfInputKeepBuffer[0];
+        lpfInputKeepBuffer[0] = inputValue;
 
         // Update the output buffer (shift the samples)
-        lpfOutputKeepBuffer[1] = lpfOutputKeepBuffer[0]; 
-        lpfOutputKeepBuffer[0] = y;                     
+        lpfOutputKeepBuffer[1] = lpfOutputKeepBuffer[0];
+        lpfOutputKeepBuffer[0] = y;
 
         return y | 0;
     }
@@ -212,12 +212,14 @@ namespace spikerbit {
 
             lastSample = tempCalculationValue
             tempCalculationValue = pins.analogReadPin(AnalogPin.P1)
-            buffer.push(tempCalculationValue);
 
-            if (buffer.length > MAX_BUFFER_SIZE) {
-                buffer.removeAt(0)
-            }
             if (signalType == Signal.ECG) {
+                buffer.push(tempCalculationValue);
+
+                if (buffer.length > MAX_BUFFER_SIZE) {
+                    buffer.removeAt(0)
+                }
+
                 tempCalculationValue = lpfFilterSingleSample(tempCalculationValue)
                 tempCalculationValue = hpfFilterSingleSample(tempCalculationValue)
                 if (tempCalculationValue > ECG_TOP_THRESHOLD || tempCalculationValue < ECG_BOTTOM_THRESHOLD) {
@@ -234,7 +236,7 @@ namespace spikerbit {
                     if (ecgTimestamps.length > 3) {
                         ecgTimestamps.removeAt(0)
                         bpmHeart = (120000 / (ecgTimestamps[2] - ecgTimestamps[1] + ecgTimestamps[1] - ecgTimestamps[0])) | 0
-                        
+
                     }
 
                 }
@@ -252,8 +254,19 @@ namespace spikerbit {
                 if (envelopeValue < 0) {
                     envelopeValue = 0;
                 }
+
+                buffer.push(envelopeValue);
+
+                if (buffer.length > MAX_BUFFER_SIZE) {
+                    buffer.removeAt(0)
+                }
             }
             else if (signalType = Signal.EEG) {
+                buffer.push(tempCalculationValue);
+
+                if (buffer.length > MAX_BUFFER_SIZE) {
+                    buffer.removeAt(0)
+                }
                 eegSignalPower = eegSignalPower * 0.99 + 0.01 * (Math.abs(tempCalculationValue - 512))
                 filteredValue = notchFilterSingleSample(tempCalculationValue)
                 eegNotchedSignalPower = eegNotchedSignalPower * 0.99 + 0.01 * (Math.abs(filteredValue - 512))
@@ -262,7 +275,7 @@ namespace spikerbit {
                     eegAlphaPower = 0;
                 }
             }
-            
+
             basic.pause(0)
         }
     }
@@ -295,12 +308,10 @@ namespace spikerbit {
     //% weight=40
     //% block="muscle power signal"
     export function musclePowerSignal(): number {
-        if (signalType == Signal.EMG)
-        {
+        if (signalType == Signal.EMG) {
             return envelopeValue;
         }
-        else
-        {
+        else {
             return 0;
         }
     }
@@ -351,12 +362,10 @@ namespace spikerbit {
     //% weight=50
     //% block="heart rate"
     export function heartRate(): number {
-        if (signalType == Signal.ECG)
-        {
+        if (signalType == Signal.ECG) {
             return bpmHeart;
         }
-        else
-        {
+        else {
             return 0;
         }
     }
@@ -404,37 +413,8 @@ namespace spikerbit {
     //% weight=60
     //% block="brain alpha power"
     export function brainAlphaPower(): number {
-        if (signalType == Signal.EEG)
-        {
+        if (signalType == Signal.EEG) {
             return eegAlphaPower;
-        }
-        else
-        {
-            return 0;
-        }
-    }
-
-    
-    /**
-     * Print number provided as input parameter
-     */
-
-    //% group="Helper Utility"
-    //% weight=72
-    //% block="print %value"
-    export function print(value: number): void {
-        serial.writeValue("Signal", value);
-    }
-    /**
-     * Return last measured value of the EMG signal
-     */
-
-    //% group="Helper Utility"
-    //% weight=71
-    //% block="muscle raw signal"
-    export function muscleRawsignal(): number {
-        if (buffer.length > 0 && signalType == Signal.EMG) {
-            return buffer[buffer.length - 1];
         }
         else {
             return 0;
@@ -442,16 +422,47 @@ namespace spikerbit {
     }
 
 
+    /**
+     * Print number provided as input parameter
+     */
+
+    //% group="Helper Utility"
+    //% weight=73
+    //% block="print %value"
+    export function print(value: number): void {
+        serial.writeValue("Signal", value);
+    }
+
 
     /**
      * Return tree seconds of recorded signal
      */
 
     //% group="Helper Utility"
-    //% weight=70
+    //% weight=72
     //% block="signal block"
     export function signalBlock(): number[] {
         return buffer;
+    }
+
+
+    /**
+     * Return max value of signal for the specified duration in milliseconds.
+     * Uses an internal buffer sampled at 250 Hz. 
+     */
+
+    //% group="Helper Utility"
+    //% weight=71
+    //% block="max signal in last $durationMs ms"
+    export function maxSignalInLast(durationMs: number): number {
+
+        let numSamples = Math.floor(durationMs / 4);  // Calculate number of samples
+
+        // Get only the first `numSamples` elements from `buffer`
+        const bufferSlice = buffer.slice(Math.max(buffer.length - numSamples, 0));
+
+        // Calculate the max value in this slice
+        return bufferSlice.reduce((max, current) => current > max ? current : max, -Infinity);
     }
 
 }
