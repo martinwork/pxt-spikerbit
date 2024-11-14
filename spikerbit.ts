@@ -447,7 +447,7 @@ namespace spikerbit {
 
 
     /**
-     * Return max value of signal for the specified duration in milliseconds.
+     * Returns max value of signal for the specified duration in milliseconds.
      * Uses an internal buffer sampled at 250 Hz. 
      */
 

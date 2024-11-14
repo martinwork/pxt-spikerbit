@@ -108,18 +108,20 @@ Prints the signal value to the serial output.
 spikerbit.print(spikerbit.heartRate());
 ```
 
-#### `muscleRawsignal(): number`
-Returns the last measured EMG signal.
-
-```typescript
-spikerbit.muscleRawsignal();
-```
-
 #### `signalBlock(): number[]`
 Returns the recorded signal block for the last 3 seconds (750 samples).
 
 ```typescript
 let signalBlock = spikerbit.signalBlock();
+```
+
+#### `maxSignalInLast(durationMs: number): number`
+Returns max value of signal for the specified duration in milliseconds.
+For EMG it returns max of power (envelope) of the signal. For EEG and ECG it returns max of raw signal. 
+Uses an internal buffer sampled at 250 Hz. 
+
+```typescript
+let maxDuringLastSecond = maxSignalInLast(1000);
 ```
 
 
