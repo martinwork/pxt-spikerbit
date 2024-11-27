@@ -6,7 +6,7 @@ enum Signal {
 }
 
 
-//% color="#FF805E" icon="\uf188" weight=90
+//% color="#FF805E" icon="\uf188" weight=90 
 namespace spikerbit {
     let buffer: number[] = [];
     let ecgTimestamps: number[] = [];
@@ -291,8 +291,8 @@ namespace spikerbit {
     //% block="start muscle recording"
     export function startMuscleRecording(): void {
         signalType = Signal.EMG;
-        pins.digitalWritePin(DigitalPin.P8, 1)
-        pins.digitalWritePin(DigitalPin.P9, 1)
+        pins.digitalWritePin(DigitalPin.P8, 0)
+        pins.digitalWritePin(DigitalPin.P9, 0)
         if (notInitialized) {
             control.inBackground(() => {
                 backgroundTask()
@@ -327,8 +327,8 @@ namespace spikerbit {
         signalType = Signal.ECG;
         calculateLPFCoefficients(ECG_LPF_CUTOFF, Q_LPF_HPF, SAMPLING_RATE)
         calculateHPFCoefficients(ECG_HPF_CUTOFF, Q_LPF_HPF, SAMPLING_RATE);
-        pins.digitalWritePin(DigitalPin.P8, 0)
-        pins.digitalWritePin(DigitalPin.P9, 1)
+        pins.digitalWritePin(DigitalPin.P8, 1)
+        pins.digitalWritePin(DigitalPin.P9, 0)
         if (notInitialized) {
             control.inBackground(() => {
                 backgroundTask()
@@ -380,8 +380,8 @@ namespace spikerbit {
     export function startBrainRecording(): void {
         signalType = Signal.EEG;
         calculateNotchCoefficients(ALPHA_WAVE_FREQUENCY, Q_NOTCH, SAMPLING_RATE);
-        pins.digitalWritePin(DigitalPin.P8, 1)
-        pins.digitalWritePin(DigitalPin.P9, 0)
+        pins.digitalWritePin(DigitalPin.P8, 0)
+        pins.digitalWritePin(DigitalPin.P9, 1)
         if (notInitialized) {
             control.inBackground(() => {
                 backgroundTask()
