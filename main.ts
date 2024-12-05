@@ -1,4 +1,4 @@
-spikerbit.startHeartRecording()
+spikerbit.startMuscleRecording()
 basic.forever(function () {
-    spikerbit.print(spikerbit.heartRate())
+    spikerbit.print(spikerbit.musclePowerSignal())
 })

@@ -212,7 +212,6 @@ namespace spikerbit {
 
             lastSample = tempCalculationValue
             tempCalculationValue = pins.analogReadPin(AnalogPin.P1)
-
             if (signalType == Signal.ECG) {
                 buffer.push(tempCalculationValue);
 
@@ -427,7 +426,7 @@ namespace spikerbit {
      */
 
     //% group="Helper Utility"
-    //% weight=73
+    //% weight=74
     //% block="print %value"
     export function print(value: number): void {
         serial.writeValue("Signal", value);
@@ -439,7 +438,7 @@ namespace spikerbit {
      */
 
     //% group="Helper Utility"
-    //% weight=72
+    //% weight=73
     //% block="signal block"
     export function signalBlock(): number[] {
         return buffer;
@@ -452,7 +451,7 @@ namespace spikerbit {
      */
 
     //% group="Helper Utility"
-    //% weight=71
+    //% weight=72
     //% block="max signal in last $durationMs ms"
     export function maxSignalInLast(durationMs: number): number {
 
@@ -463,6 +462,61 @@ namespace spikerbit {
 
         // Calculate the max value in this slice
         return bufferSlice.reduce((max, current) => current > max ? current : max, -Infinity);
+    }
+
+
+
+    /**
+     * Returns number of peaks of signal for the specified duration in milliseconds.
+     * Uses an internal buffer sampled at 250 Hz.
+     */
+
+    //% group="Helper Utility"
+    //% weight=71
+    //% block="number of peaks in last $durationMs ms"
+    export function numPeaksInLast(durationMs: number): number {
+
+        // Get only the first `numSamples` elements from `buffer`
+        const numSamples = Math.floor(durationMs / 4);  // Calculate number of samples
+        const bufferSlice = buffer.slice(Math.max(buffer.length - numSamples, 0));
+
+        let baseline = 0;
+        let prevValue = -Infinity;
+        let rising = false;
+        let peak = -1;
+        let steps = 20;
+        let counter = 0;
+
+        for (let value of bufferSlice) {
+
+            // The singal is in the rising phase
+            if (value > prevValue) {
+                rising = true;
+                peak = -1;
+            } else {
+                // Check ONLY IF rising happened before falling
+                if (rising) {
+
+                    // Get the peak point
+                    if (peak == -1) {
+                        peak = prevValue;
+                    }
+
+                    // Increase the counter ONLY IF current signal is 
+                    // 'ENVELOPE_DECAY' * 'steps' away from the peak
+                    if (peak - value > ENVELOPE_DECAY * steps) {
+                        counter++;
+                        rising = false;
+                    }
+                }
+            }
+
+            // Update the previous signal
+            prevValue = value;
+        }
+
+        return counter;
+        
     }
 
 }
