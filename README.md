@@ -109,10 +109,11 @@ spikerbit.print(spikerbit.heartRate());
 ```
 
 #### `signalBlock(): number[]`
-Returns the recorded signal block for the last 3 seconds (750 samples).
+Returns the recorded signal block for the last 3 seconds. If you pass durationMs parameter it will return just last durationMs of data.
 
 ```typescript
 let signalBlock = spikerbit.signalBlock();
+let shortSignalBlock = spikerbit.signalBlock(500);
 ```
 
 #### `maxSignalInLast(durationMs: number): number`
@@ -123,7 +124,12 @@ Uses an internal buffer sampled at 250 Hz.
 ```typescript
 let maxDuringLastSecond = maxSignalInLast(1000);
 ```
+#### `numPeaksInLast(durationMs: number): number`
+Returns the number of peaks in the signal for the specified duration in milliseconds.
 
+```typescript
+let numPeaks = numPeaksInLast(1000);
+```
 
 #### Metadata (used for search, rendering)
 
