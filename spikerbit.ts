@@ -439,9 +439,18 @@ namespace spikerbit {
 
     //% group="Helper Utility"
     //% weight=73
-    //% block="signal block"
-    export function signalBlock(): number[] {
-        return buffer;
+    //% block="signal block || in last $durationMs (ms)"
+    //% durationMs.defl = 3000
+    export function signalBlock(durationMs?: number): number[] {
+        control.assert(durationMs >= 0 || durationMs <= 3000, "Spikerbit error")
+
+        // Calculate number of samples
+        let numSamples = Math.floor(durationMs / 4);
+
+        // Get only the first `numSamples` elements from `buffer`
+        const bufferSlice = buffer.slice(Math.max(buffer.length - numSamples, 0));
+
+        return bufferSlice;
     }
 
 
