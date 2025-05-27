@@ -16,11 +16,13 @@ namespace spikerbit {
     let tempCalculationValue: number = 0
     let lastSample = 0
     let bpmHeart: number = 0
+    let beatHeart: number = 0
+    let heartBeatHandler: () => void = null;
     const MAX_BUFFER_SIZE = 750;
     const NOISE_FLOOR = 580;
     const ENVELOPE_DECAY = 2;
-    const ECG_TOP_THRESHOLD = 100
-    const ECG_BOTTOM_THRESHOLD = -100
+    const ECG_TOP_THRESHOLD = 70
+    const ECG_BOTTOM_THRESHOLD = -70
     const DEBOUNCE_PERIOD_ECG = 300
     const ECG_LPF_CUTOFF = 40
     const ECG_HPF_CUTOFF = 3
@@ -221,15 +223,18 @@ namespace spikerbit {
 
                 tempCalculationValue = lpfFilterSingleSample(tempCalculationValue)
                 tempCalculationValue = hpfFilterSingleSample(tempCalculationValue)
+                beatHeart = 0;
                 if (tempCalculationValue > ECG_TOP_THRESHOLD || tempCalculationValue < ECG_BOTTOM_THRESHOLD) {
                     let currentMillis = control.millis()
                     if (ecgTimestamps.length > 0) {
                         if ((currentMillis - ecgTimestamps[ecgTimestamps.length - 1]) > DEBOUNCE_PERIOD_ECG) {
                             ecgTimestamps.push(currentMillis)
+                            beatHeart = 1;
                         }
                     }
                     else {
                         ecgTimestamps.push(currentMillis)
+                        beatHeart = 1;
                     }
 
                     if (ecgTimestamps.length > 3) {
@@ -238,6 +243,10 @@ namespace spikerbit {
 
                     }
 
+                }
+
+                if (beatHeart && heartBeatHandler) {
+                    heartBeatHandler();
                 }
             }
             else if (signalType == Signal.EMG) {
@@ -320,7 +329,7 @@ namespace spikerbit {
      */
 
     //% group="Heart"
-    //% weight=52
+    //% weight=53
     //% block="start heart recording"
     export function startHeartRecording(): void {
         signalType = Signal.ECG;
@@ -342,7 +351,7 @@ namespace spikerbit {
      */
 
     //% group="Heart"
-    //% weight=51
+    //% weight=52
     //% block="heart signal"
     export function heartSignal(): number {
         if (buffer.length > 0 && signalType == Signal.ECG) {
@@ -358,7 +367,7 @@ namespace spikerbit {
      */
 
     //% group="Heart"
-    //% weight=50
+    //% weight=51
     //% block="heart rate"
     export function heartRate(): number {
         if (signalType == Signal.ECG) {
@@ -367,6 +376,17 @@ namespace spikerbit {
         else {
             return 0;
         }
+    }
+
+    /**
+     * Run events based on on the heartbeat
+     */
+
+    //% group="Heart"
+    //% weight=50
+    //% block="on heartbeat"
+    export function onHeartBeat(handler: () => void): void {
+        heartBeatHandler = handler;
     }
 
     /**
@@ -525,7 +545,7 @@ namespace spikerbit {
         }
 
         return counter;
-        
+
     }
 
 }
