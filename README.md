@@ -2,6 +2,8 @@
 
 ## Spiker:Bit extension 
 
+![MakeCode](https://img.shields.io/badge/for%20PXT-micro:bit-blue) • EMG • EEG • ECG
+
 This extension enables the use of the Backyard Brains Spiker:Bit with the Microsoft MakeCode editor. 
 The Spiker:Bit records electrical activity from the brain (EEG), muscles (EMG), and heart (ECG), making neuroscience and physiology experiments accessible in educational settings. Use this extension to create interactive projects and explore real-time bio-signals in your classroom or lab
 For more details about the Spiker:Bit please check our product page [https://backyardbrains.com/products/](https://backyardbrains.com/products/)
