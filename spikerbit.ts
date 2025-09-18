@@ -269,7 +269,7 @@ namespace spikerbit {
                     buffer.removeAt(0)
                 }
             }
-            else if (signalType = Signal.EEG) {
+            else if (signalType == Signal.EEG) {
                 buffer.push(tempCalculationValue);
 
                 if (buffer.length > MAX_BUFFER_SIZE) {
@@ -297,14 +297,19 @@ namespace spikerbit {
     //% group="Muscle"
     //% weight=41
     //% block="start muscle recording"
+    //% help=spikerbit/start-muscle-recording
     export function startMuscleRecording(): void {
         signalType = Signal.EMG;
+        // clear buffers on (re)start
+        buffer = []
+        ecgTimestamps = []
         pins.digitalWritePin(DigitalPin.P8, 0)
         pins.digitalWritePin(DigitalPin.P9, 0)
         if (notInitialized) {
             control.inBackground(() => {
                 backgroundTask()
             })
+            notInitialized = 0
         }
     }
 
@@ -315,6 +320,7 @@ namespace spikerbit {
     //% group="Muscle"
     //% weight=40
     //% block="muscle power signal"
+    //% help=spikerbit/muscle-power-signal
     export function musclePowerSignal(): number {
         if (signalType == Signal.EMG) {
             return envelopeValue;
@@ -331,8 +337,12 @@ namespace spikerbit {
     //% group="Heart"
     //% weight=53
     //% block="start heart recording"
+    //% help=spikerbit/start-heart-recording
     export function startHeartRecording(): void {
         signalType = Signal.ECG;
+        // clear buffers on (re)start
+        buffer = []
+        ecgTimestamps = []
         calculateLPFCoefficients(ECG_LPF_CUTOFF, Q_LPF_HPF, SAMPLING_RATE)
         calculateHPFCoefficients(ECG_HPF_CUTOFF, Q_LPF_HPF, SAMPLING_RATE);
         pins.digitalWritePin(DigitalPin.P8, 1)
@@ -341,6 +351,7 @@ namespace spikerbit {
             control.inBackground(() => {
                 backgroundTask()
             })
+            notInitialized = 0
         }
     }
 
@@ -353,6 +364,7 @@ namespace spikerbit {
     //% group="Heart"
     //% weight=52
     //% block="heart signal"
+    //% help=spikerbit/heart-signal
     export function heartSignal(): number {
         if (buffer.length > 0 && signalType == Signal.ECG) {
             return buffer[buffer.length - 1];
@@ -369,6 +381,7 @@ namespace spikerbit {
     //% group="Heart"
     //% weight=51
     //% block="heart rate"
+    //% help=spikerbit/heart-rate
     export function heartRate(): number {
         if (signalType == Signal.ECG) {
             return bpmHeart;
@@ -385,6 +398,7 @@ namespace spikerbit {
     //% group="Heart"
     //% weight=50
     //% block="on heartbeat"
+    //% help=spikerbit/on-heartbeat
     export function onHeartBeat(handler: () => void): void {
         heartBeatHandler = handler;
     }
@@ -396,8 +410,12 @@ namespace spikerbit {
     //% group="Brain"
     //% weight=62
     //% block="start brain recording"
+    //% help=spikerbit/start-brain-recording
     export function startBrainRecording(): void {
         signalType = Signal.EEG;
+        // clear buffers on (re)start
+        buffer = []
+        ecgTimestamps = []
         calculateNotchCoefficients(ALPHA_WAVE_FREQUENCY, Q_NOTCH, SAMPLING_RATE);
         pins.digitalWritePin(DigitalPin.P8, 0)
         pins.digitalWritePin(DigitalPin.P9, 1)
@@ -405,6 +423,7 @@ namespace spikerbit {
             control.inBackground(() => {
                 backgroundTask()
             })
+            notInitialized = 0
         }
     }
 
@@ -415,6 +434,7 @@ namespace spikerbit {
     //% group="Brain"
     //% weight=61
     //% block="brain signal"
+    //% help=spikerbit/brain-signal
     export function brainSignal(): number {
         if (buffer.length > 0 && signalType == Signal.EEG) {
             return buffer[buffer.length - 1];
@@ -431,6 +451,7 @@ namespace spikerbit {
     //% group="Brain"
     //% weight=60
     //% block="brain alpha power"
+    //% help=spikerbit/brain-alpha-power
     export function brainAlphaPower(): number {
         if (signalType == Signal.EEG) {
             return eegAlphaPower;
@@ -448,23 +469,27 @@ namespace spikerbit {
     //% group="Helper Utility"
     //% weight=74
     //% block="print %value"
+    //% help=spikerbit/print
     export function print(value: number): void {
         serial.writeValue("Signal", value);
     }
 
 
     /**
-     * Return tree seconds of recorded signal
+     * Return three seconds of recorded signal
      */
 
     //% group="Helper Utility"
     //% weight=73
     //% block="signal block || in last $durationMs (ms)"
-    //% durationMs.defl = 3000
+    //% durationMs.defl=3000
+    //% help=spikerbit/signal-block
     export function signalBlock(durationMs?: number): number[] {
-        control.assert(durationMs >= 0 || durationMs <= 3000, "Spikerbit error")
+        // Default window to 3000ms if not provided
+        if (durationMs == null) durationMs = 3000
+        control.assert(durationMs >= 0 && durationMs <= 3000, "Spikerbit error")
 
-        // Calculate number of samples
+        // Calculate number of samples (250Hz -> 4ms/sample)
         let numSamples = Math.floor(durationMs / 4);
 
         // Get only the first `numSamples` elements from `buffer`
@@ -482,6 +507,7 @@ namespace spikerbit {
     //% group="Helper Utility"
     //% weight=72
     //% block="max signal in last $durationMs ms"
+    //% help=spikerbit/max-signal-in-last
     export function maxSignalInLast(durationMs: number): number {
 
         let numSamples = Math.floor(durationMs / 4);  // Calculate number of samples
@@ -490,7 +516,8 @@ namespace spikerbit {
         const bufferSlice = buffer.slice(Math.max(buffer.length - numSamples, 0));
 
         // Calculate the max value in this slice
-        return bufferSlice.reduce((max, current) => current > max ? current : max, -Infinity);
+        if (bufferSlice.length == 0) return 0
+        return bufferSlice.reduce((max, current) => current > max ? current : max, bufferSlice[0]);
     }
 
 
@@ -503,6 +530,7 @@ namespace spikerbit {
     //% group="Helper Utility"
     //% weight=71
     //% block="number of peaks in last $durationMs ms"
+    //% help=spikerbit/num-peaks-in-last
     export function numPeaksInLast(durationMs: number): number {
 
         // Get only the first `numSamples` elements from `buffer`
@@ -546,6 +574,22 @@ namespace spikerbit {
 
         return counter;
 
+    }
+
+    /**
+     * Stop recording and clear internal buffers
+     */
+    //% group="Helper Utility"
+    //% weight=70
+    //% block="stop recording"
+    //% help=spikerbit/stop-recording
+    export function stopRecord(): void {
+        buffer = []
+        ecgTimestamps = []
+        envelopeValue = 0
+        bpmHeart = 0
+        pins.digitalWritePin(DigitalPin.P8, 0)
+        pins.digitalWritePin(DigitalPin.P9, 0)
     }
 
 }

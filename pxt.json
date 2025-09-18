@@ -1,6 +1,6 @@
 {
-    "name": "Test",
-    "description": "",
+    "name": "spikerbit",
+    "description": "Backyard Brains spiker:bit extension for micro:bit MakeCode (EEG/EMG/ECG)",
     "dependencies": {
         "core": "*",
         "radio": "*",
@@ -23,5 +23,6 @@
     "supportedTargets": [
         "microbit"
     ],
-    "preferredEditor": "blocksprj"
+    "preferredEditor": "blocksprj",
+    "license": "MIT"
 }
