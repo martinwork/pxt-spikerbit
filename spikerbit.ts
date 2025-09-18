@@ -213,12 +213,12 @@ namespace spikerbit {
         while (true) {
 
             lastSample = tempCalculationValue
-            tempCalculationValue = pins.analogReadPin(AnalogPin.P1)
+            tempCalculationValue = pins.analogReadPin(AnalogPin.P0)
             if (signalType == Signal.ECG) {
                 buffer.push(tempCalculationValue);
 
                 if (buffer.length > MAX_BUFFER_SIZE) {
-                    buffer.removeAt(0)
+                    buffer.shift()
                 }
 
                 tempCalculationValue = lpfFilterSingleSample(tempCalculationValue)
@@ -238,7 +238,7 @@ namespace spikerbit {
                     }
 
                     if (ecgTimestamps.length > 3) {
-                        ecgTimestamps.removeAt(0)
+                        ecgTimestamps.shift()
                         bpmHeart = (120000 / (ecgTimestamps[2] - ecgTimestamps[1] + ecgTimestamps[1] - ecgTimestamps[0])) | 0
 
                     }
@@ -266,14 +266,14 @@ namespace spikerbit {
                 buffer.push(envelopeValue);
 
                 if (buffer.length > MAX_BUFFER_SIZE) {
-                    buffer.removeAt(0)
+                    buffer.shift()
                 }
             }
             else if (signalType == Signal.EEG) {
                 buffer.push(tempCalculationValue);
 
                 if (buffer.length > MAX_BUFFER_SIZE) {
-                    buffer.removeAt(0)
+                    buffer.shift()
                 }
                 eegSignalPower = eegSignalPower * 0.99 + 0.01 * (Math.abs(tempCalculationValue - 512))
                 filteredValue = notchFilterSingleSample(tempCalculationValue)
@@ -487,7 +487,7 @@ namespace spikerbit {
     export function signalBlock(durationMs?: number): number[] {
         // Default window to 3000ms if not provided
         if (durationMs == null) durationMs = 3000
-        control.assert(durationMs >= 0 && durationMs <= 3000, "Spikerbit error")
+        control.assert(durationMs >= 0 && durationMs <= 3000, "spiker:bit error")
 
         // Calculate number of samples (250Hz -> 4ms/sample)
         let numSamples = Math.floor(durationMs / 4);
