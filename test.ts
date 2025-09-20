@@ -1,5 +1,4 @@
-// Automated tests for spiker:bit MakeCode package
-// Types for tests/control are declared in pxt-shims.d.ts
+// Automated tests for Spiker:Bit MakeCode package
 // Run locally with pxt test and in CI by the Micro:bit Foundation.
 
 // How to run: use "pxt test". All tests are simulator-safe.

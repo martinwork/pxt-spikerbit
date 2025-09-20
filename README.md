@@ -1,36 +1,17 @@
 
 
-## spiker:bit extension 
+## Spiker:Bit extension 
 
 ![MakeCode](https://img.shields.io/badge/for%20PXT-micro:bit-blue) • EMG • EEG • ECG
 
-This extension enables the use of the Backyard Brains spiker:bit with the Microsoft MakeCode editor.
-The spiker:bit records electrical activity from the brain (EEG), muscles (EMG), and heart (ECG), making neuroscience and physiology experiments accessible in educational settings. Use this extension to create interactive projects and explore real‑time bio‑signals in your classroom or lab.
-For more details about the spiker:bit please check our product page [Backyard Brains spiker:bit](https://backyardbrains.com/products/spiker-bit).
+This extension enables the use of the Backyard Brains Spiker:Bit with the Microsoft MakeCode editor.
+The Spiker:Bit records electrical activity from the brain (EEG), muscles (EMG), and heart (ECG), making neuroscience and physiology experiments accessible in educational settings. Use this extension to create interactive projects and explore real‑time bio‑signals in your classroom or lab.
+For more details about the Spiker:Bit please check our product page [Backyard Brains Spiker:Bit](https://backyardbrains.com/products/).
 
 Further learning and lesson ideas:
-- [Backyard Brains spiker:bit Documentation](https://docs.backyardbrains.com/neuroengineering/spikerbit)
+- [Backyard Brains Education and Experiments](https://backyardbrains.com/experiments)
 - [micro:bit MakeCode Tutorials](https://makecode.microbit.org/projects)
 - [MakeCode Docs on Extensions](https://makecode.com/extensions)
-
-### Pin allocation
-
-- **P0**: analog input (ADC) used to read bio‑signals (EMG/EEG/ECG).
-- **P1**: servo header on board (passive breakout; not used by the extension).
-- **P2**: analog Grove connector (passive breakout; not used by the extension).
-- **P19/P20**: digital Grove connector (passive breakout; available for future expansion). Supports I2C (SCL/SDA) and PWM‑capable functions on micro:bit.
-- **P8**: digital output used for mode selection/control (see table below).
-- **P9**: digital output used for mode selection/control (see table below).
-
-Mode mapping for P8/P9:
-
-| Mode | P8 | P9 |
-| --- | --- | --- |
-| EMG (muscle) | 0 | 0 |
-| ECG (heart) | 1 | 0 |
-| EEG (brain) | 0 | 1 |
-
-Not used/affected by the extension: SPI, I2C, UART on edge connectors (except that P19/P20 remain free for user projects). Serial output uses the USB CDC console (`serial.writeValue`) and does not claim UART pins.
 
 ## Use as Extension
 
