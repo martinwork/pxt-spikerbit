@@ -4,15 +4,15 @@ namespace spikerbit {
 
     // Enums to be used in extension
     enum Signal {
-        EMG,
-        EEG,
-        ECG
+        Emg,
+        Eeg,
+        Ecg
     }
 
 
     let buffer: number[] = [];
     let ecgTimestamps: number[] = [];
-    let signalType: Signal = Signal.EMG
+    let signalType: Signal = Signal.Emg
     let notInitialized = 1
     let envelopeValue: number = 0
     let tempCalculationValue: number = 0
@@ -216,7 +216,7 @@ namespace spikerbit {
 
             lastSample = tempCalculationValue
             tempCalculationValue = pins.analogReadPin(AnalogPin.P1)
-            if (signalType == Signal.ECG) {
+            if (signalType == Signal.Ecg) {
                 buffer.push(tempCalculationValue);
 
                 if (buffer.length > MAX_BUFFER_SIZE) {
@@ -251,7 +251,7 @@ namespace spikerbit {
                     heartBeatHandler();
                 }
             }
-            else if (signalType == Signal.EMG) {
+            else if (signalType == Signal.Emg) {
                 tempCalculationValue = tempCalculationValue - NOISE_FLOOR;
                 if (tempCalculationValue > 0) {
                     if (tempCalculationValue > envelopeValue) {
@@ -271,7 +271,7 @@ namespace spikerbit {
                     buffer.removeAt(0)
                 }
             }
-            else if (signalType == Signal.EEG) {
+            else if (signalType == Signal.Eeg) {
                 buffer.push(tempCalculationValue);
 
                 if (buffer.length > MAX_BUFFER_SIZE) {
@@ -301,7 +301,7 @@ namespace spikerbit {
     //% block="start muscle recording"
     //% help=spikerbit/start-muscle-recording
     export function startMuscleRecording(): void {
-        signalType = Signal.EMG;
+        signalType = Signal.Emg;
         // clear buffers on (re)start
         buffer = []
         ecgTimestamps = []
@@ -324,7 +324,7 @@ namespace spikerbit {
     //% block="muscle power signal"
     //% help=spikerbit/muscle-power-signal
     export function musclePowerSignal(): number {
-        if (signalType == Signal.EMG) {
+        if (signalType == Signal.Emg) {
             return envelopeValue;
         }
         else {
@@ -341,7 +341,7 @@ namespace spikerbit {
     //% block="start heart recording"
     //% help=spikerbit/start-heart-recording
     export function startHeartRecording(): void {
-        signalType = Signal.ECG;
+        signalType = Signal.Ecg;
         // clear buffers on (re)start
         buffer = []
         ecgTimestamps = []
@@ -368,7 +368,7 @@ namespace spikerbit {
     //% block="heart signal"
     //% help=spikerbit/heart-signal
     export function heartSignal(): number {
-        if (buffer.length > 0 && signalType == Signal.ECG) {
+        if (buffer.length > 0 && signalType == Signal.Ecg) {
             return buffer[buffer.length - 1];
         }
         else {
@@ -385,7 +385,7 @@ namespace spikerbit {
     //% block="heart rate"
     //% help=spikerbit/heart-rate
     export function heartRate(): number {
-        if (signalType == Signal.ECG) {
+        if (signalType == Signal.Ecg) {
             return bpmHeart;
         }
         else {
@@ -414,7 +414,7 @@ namespace spikerbit {
     //% block="start brain recording"
     //% help=spikerbit/start-brain-recording
     export function startBrainRecording(): void {
-        signalType = Signal.EEG;
+        signalType = Signal.Eeg;
         // clear buffers on (re)start
         buffer = []
         ecgTimestamps = []
@@ -438,7 +438,7 @@ namespace spikerbit {
     //% block="brain signal"
     //% help=spikerbit/brain-signal
     export function brainSignal(): number {
-        if (buffer.length > 0 && signalType == Signal.EEG) {
+        if (buffer.length > 0 && signalType == Signal.Eeg) {
             return buffer[buffer.length - 1];
         }
         else {
@@ -455,7 +455,7 @@ namespace spikerbit {
     //% block="brain alpha power"
     //% help=spikerbit/brain-alpha-power
     export function brainAlphaPower(): number {
-        if (signalType == Signal.EEG) {
+        if (signalType == Signal.Eeg) {
             return eegAlphaPower;
         }
         else {
