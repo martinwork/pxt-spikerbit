@@ -1,13 +1,15 @@
-// Enums to be used in extension
-enum Signal {
-    EMG,
-    EEG,
-    ECG
-}
-
 
 //% color="#FD8164" icon="\uf21e" weight=90
 namespace spikerbit {
+
+    // Enums to be used in extension
+    enum Signal {
+        EMG,
+        EEG,
+        ECG
+    }
+
+
     let buffer: number[] = [];
     let ecgTimestamps: number[] = [];
     let signalType: Signal = Signal.EMG
