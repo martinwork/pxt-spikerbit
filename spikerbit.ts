@@ -471,7 +471,7 @@ namespace spikerbit {
     //% block="print %value"
     //% help=spikerbit/print
     export function print(value: number): void {
-        serial.writeValue("Signal", value);
+        serial.writeValue("Value", value);
     }
 
 
