@@ -30,8 +30,21 @@ To edit this repository in MakeCode.
 * click on **Import** then click on **Import URL**
 * paste **https://github.com/BackyardBrains/pxt-spikerbit** and click import
 
+## Example
 
 Here is the API with teacher‑friendly examples. You can copy these into MakeCode JavaScript editor.
+
+Classroom example: show EMG envelope on the LEDs for 3 seconds, then stop.
+```typescript
+spikerbit.startMuscleRecording()
+loops.everyInterval(100, function () {
+    let value = spikerbit.musclePowerSignal()
+    let bar = Math.map(value, 0, 1023, 0, 25)
+    led.plotBarGraph(bar, 25)
+})
+basic.pause(3000)
+spikerbit.stopRecord()
+```
 
 ---
 
@@ -132,19 +145,6 @@ Returns the number of peaks in the signal for the specified duration in millisec
 ```typescript
 let numPeaks = spikerbit.numPeaksInLast(1000);
 ```
-
-Classroom example: show EMG envelope on the LEDs for 3 seconds, then stop.
-```typescript
-spikerbit.startMuscleRecording()
-loops.everyInterval(100, function () {
-    let value = spikerbit.musclePowerSignal()
-    let bar = Math.map(value, 0, 1023, 0, 25)
-    led.plotBarGraph(bar, 25)
-})
-basic.pause(3000)
-spikerbit.stopRecord()
-```
-
 #### Metadata (used for search, rendering)
 
 * for PXT/microbit
