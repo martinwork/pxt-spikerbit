@@ -117,7 +117,10 @@ let alphaPower = spikerbit.brainAlphaPower();
 ### Helper Utility
 
 #### `print(value: number): void`
-Prints the signal value to the serial output.
+The `print` function sends a numeric value to the serial output with the label `"Value"`.  
+This allows students and teachers to easily record or visualize data in MakeCode Data Logger or any serial monitoring tool.  
+
+You can use it to print measurements from any Spiker:Bit signal, such as the EMG envelope, raw ECG or EEG values, heart rate, or EEG alpha power.
 
 ```sig
 spikerbit.print(spikerbit.heartRate());
