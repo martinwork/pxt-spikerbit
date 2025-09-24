@@ -44,8 +44,7 @@ loops.everyInterval(100, function () {
 })
 basic.pause(3000)
 spikerbit.stopRecord()
-```blocks
-
+```
 ---
 
 ## API Functions
