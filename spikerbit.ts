@@ -489,7 +489,8 @@ namespace spikerbit {
     export function signalBlock(durationMs?: number): number[] {
         // Default window to 3000ms if not provided
         if (durationMs == null) durationMs = 3000
-        control.assert(durationMs >= 0 && durationMs <= 3000, "Spikerbit error")
+        if (durationMs < 0) durationMs = 0
+        if (durationMs > 3000) durationMs = 3000
 
         // Calculate number of samples (250Hz -> 4ms/sample)
         let numSamples = Math.floor(durationMs / 4);

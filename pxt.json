@@ -4,9 +4,8 @@
     "description": "Backyard Brains spiker:bit extension for micro:bit MakeCode (EEG/EMG/ECG)",
     "dependencies": {
         "core": "*",
-        "radio": "*",
-        "microphone": "*",
-        "servo": "*"
+        "serial": "*",
+        "pins": "*"
     },
     "files": [
         "main.blocks",
