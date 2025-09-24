@@ -35,7 +35,7 @@ To edit this repository in MakeCode.
 Here is the API with teacher‑friendly examples. You can copy these into MakeCode JavaScript editor.
 
 Classroom example: show EMG envelope on the LEDs for 3 seconds, then stop.
-```typescript
+```blocks
 spikerbit.startMuscleRecording()
 loops.everyInterval(100, function () {
     let value = spikerbit.musclePowerSignal()
@@ -44,7 +44,7 @@ loops.everyInterval(100, function () {
 })
 basic.pause(3000)
 spikerbit.stopRecord()
-```
+```blocks
 
 ---
 
@@ -55,14 +55,14 @@ spikerbit.stopRecord()
 #### `startMuscleRecording()`
 Starts recording muscle (EMG) signals.
 
-```typescript
+```sig
 spikerbit.startMuscleRecording();
 ```
 
 #### `musclePowerSignal(): number`
 Returns the last envelope value of the EMG signal.
 
-```typescript
+```sig
 let power = spikerbit.musclePowerSignal();
 ```
 
@@ -73,21 +73,21 @@ let power = spikerbit.musclePowerSignal();
 #### `startHeartRecording()`
 Starts recording heart (ECG) signals.
 
-```typescript
+```sig
 spikerbit.startHeartRecording();
 ```
 
 #### `heartSignal(): number`
 Returns the last measured ECG signal.
 
-```typescript
+```sig
 let signal = spikerbit.heartSignal();
 ```
 
 #### `heartRate(): number`
 Returns the calculated heart rate based on the last two heart beats.
 
-```typescript
+```sig
 let rate = spikerbit.heartRate();
 ```
 
@@ -96,21 +96,21 @@ let rate = spikerbit.heartRate();
 #### `startBrainRecording()`
 Starts recording brain (EEG) signals.
 
-```typescript
+```sig
 spikerbit.startBrainRecording();
 ```
 
 #### `brainSignal(): number`
 Returns the last measured EEG signal.
 
-```typescript
+```sig
 let signal = spikerbit.brainSignal();
 ```
 
 #### `brainAlphaPower(): number`
 Returns the alpha wave power of the EEG signal.
 
-```typescript
+```sig
 let alphaPower = spikerbit.brainAlphaPower();
 ```
 
@@ -119,14 +119,14 @@ let alphaPower = spikerbit.brainAlphaPower();
 #### `print(value: number): void`
 Prints the signal value to the serial output.
 
-```typescript
+```sig
 spikerbit.print(spikerbit.heartRate());
 ```
 
 #### `signalBlock(): number[]`
 Returns the recorded signal block for the last 3 seconds. If you pass durationMs parameter it will return just last durationMs of data.
 
-```typescript
+```sig
 let signalBlock = spikerbit.signalBlock();
 let shortSignalBlock = spikerbit.signalBlock(500);
 ```
@@ -136,13 +136,13 @@ Returns max value of signal for the specified duration in milliseconds.
 For EMG it returns max of power (envelope) of the signal. For EEG and ECG it returns max of raw signal. 
 Uses an internal buffer sampled at 250 Hz. 
 
-```typescript
+```sig
 let maxDuringLastSecond = spikerbit.maxSignalInLast(1000);
 ```
 #### `numPeaksInLast(durationMs: number): number`
 Returns the number of peaks in the signal for the specified duration in milliseconds.
 
-```typescript
+```sig
 let numPeaks = spikerbit.numPeaksInLast(1000);
 ```
 #### Metadata (used for search, rendering)
