@@ -2,11 +2,12 @@
     "name": "spikerbit",
     "version": "1.0.2",
     "description": "Backyard Brains spiker:bit extension for micro:bit MakeCode (EEG/EMG/ECG)",
+    "license": "MIT",
     "dependencies": {
         "core": "*"
     },
     "files": [
-        "main.blocks",
+        "main.ts",
         "spikerbit.ts"
     ],
     "testFiles": [
@@ -19,6 +20,5 @@
     "supportedTargets": [
         "microbit"
     ],
-    "preferredEditor": "blocksprj",
-    "license": "MIT"
+    "preferredEditor": "tsprj"
 }
