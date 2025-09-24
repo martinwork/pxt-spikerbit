@@ -124,13 +124,30 @@ spikerbit.print(spikerbit.heartRate());
 ```
 
 #### `signalBlock(): number[]`
-Returns the recorded signal block for the last 3 seconds. If you pass durationMs parameter it will return just last durationMs of data.
+Returns a array of the **raw recorded signal** from the internal buffer, sampled at 250 Hz (one value every 4 ms).  
+
+Key behaviour:
+- **Input (optional)**
+  - the time window (in milliseconds) of past data to return.  
+  - Default = 3000 ms (≈3 seconds).  
+  - The maximum allowed value is 3000 ms, which corresponds to the buffer size.
+- **Output**
+  - An array of numbers, each element being one recorded sample.  
+  - The length of the array is `durationMs / 4` (rounded down), since samples are collected every 4 ms.
+- **Signal type**
+  - The function returns whatever signal is currently being recorded:
+    - **EMG** → EMG envelope (muscle power signal)  
+    - **ECG** → raw heart signal  
+    - **EEG** → raw EEG values 
+- **Buffer / limits**
+  - The internal buffer stores up to 750 samples (≈3 seconds). If `durationMs` is larger than what the buffer contains, the function just returns the available samples.
+- **Edge cases**
+  - If the buffer is empty (e.g., recording hasn’t started yet), the returned array will also be empty.
 
 ```sig
 let signalBlock = spikerbit.signalBlock();
 let shortSignalBlock = spikerbit.signalBlock(500);
 ```
-
 #### `maxSignalInLast(durationMs: number): number`
 Returns max value of signal for the specified duration in milliseconds.
 For EMG it returns max of power (envelope) of the signal. For EEG and ECG it returns max of raw signal. 
